@@ -1,6 +1,6 @@
 #![allow(unused_imports)]
 
-use std::io::Write;
+use std::io::{Read, Write};
 use std::net::TcpListener;
 
 fn main() {
@@ -9,7 +9,9 @@ fn main() {
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                stream.write_all(b"+PONG\r\n").expect("Failed to send response");
+                while stream.read(&mut [0; 1]).unwrap() == 1 {
+                    stream.write_all(b"+PONG\r\n").unwrap()
+                }
             }
             Err(e) => {
                 println!("error: {}", e);
