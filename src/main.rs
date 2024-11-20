@@ -9,8 +9,12 @@ fn main() {
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                while stream.read(&mut [0; 1]).unwrap() == 1 {
-                    stream.write_all(b"+PONG\r\n").unwrap()
+                let mut buffer = [0; 1024];
+                stream.read(&mut buffer).unwrap();
+                let input = String::from_utf8_lossy(&buffer);
+                let commands = input.split("\n");
+                for _ in commands {
+                    stream.write_all(b"+PONG\r\n").unwrap();
                 }
             }
             Err(e) => {
