@@ -9,11 +9,12 @@ fn main() {
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                let mut buffer = [0; 1024];
-                stream.read(&mut buffer).unwrap();
-                let input = String::from_utf8_lossy(&buffer);
-                let commands = input.split("\n");
-                for _ in commands {
+                loop {
+                    let packet_size = stream.read(&mut [0; 512]).unwrap();
+                    if packet_size == 0 {
+                        break;
+                    }
+
                     stream.write_all(b"+PONG\r\n").unwrap();
                 }
             }
