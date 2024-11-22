@@ -27,6 +27,8 @@ async fn main() -> io::Result<()> {
 
     loop {
         let (socket, _) = listener.accept().await?;
-        process_socket(socket).await;
+        tokio::spawn(async move {
+            process_socket(socket).await;
+        });
     }
 }
