@@ -7,11 +7,17 @@ use tokio::net::{TcpListener, TcpStream};
 
 async fn process_socket(mut socket: TcpStream) {
     loop {
-        let packet_size = socket.read(&mut [0; 512]).await.expect("Failed to read stream.");
+        let packet_size = socket
+            .read(&mut [0; 512])
+            .await
+            .expect("Failed to read stream.");
         if packet_size == 0 {
             break;
         }
-        socket.write_all(b"+PONG\r\n").await.expect("Failed to write stream.");
+        socket
+            .write_all(b"+PONG\r\n")
+            .await
+            .expect("Failed to write stream.");
     }
 }
 
@@ -23,22 +29,4 @@ async fn main() -> io::Result<()> {
         let (socket, _) = listener.accept().await?;
         process_socket(socket).await;
     }
-
-    // for stream in listener.incoming() {
-    //     match stream {
-    //         Ok(mut stream) => {
-    //             loop {
-    //                 let packet_size = stream.read(&mut [0; 512]).unwrap();
-    //                 if packet_size == 0 {
-    //                     break;
-    //                 }
-    //
-    //                 stream.write_all(b"+PONG\r\n").unwrap();
-    //             }
-    //         }
-    //         Err(e) => {
-    //             println!("error: {}", e);
-    //         }
-    //     }
-    // }
 }
